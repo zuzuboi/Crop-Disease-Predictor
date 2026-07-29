@@ -63,7 +63,11 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption='Uploaded Crop Leaf', use_container_width=True)
 
-    # Everything is nested properly inside this button execution block now
+    if "prediction_made" not in st.session_state:
+        st.session_state.prediction_made = False
+        st.session_state.predicted_class = ""
+        st.session_state.confidence = 0.0
+
     if st.button('Analyze Leaf'):
         with st.spinner('Analyzing image for diseases...'):
             img_resized = image.resize((160, 160))
@@ -74,13 +78,8 @@ if uploaded_file is not None:
             score = tf.nn.softmax(predictions[0])
 
             pred_idx = np.argmax(score)
-            predicted_class = class_names[pred_idx]
-            confidence = 100 * np.max(score)
+            st.session_state.predicted_class = class_names[pred_idx]
+            st.session_state.confidence = 100 * np.max(score)
+            st.session_state.prediction_made = True
 
-        formatted_name = predicted_class.replace('_', ' ').strip('-')
-        st.success(f"Prediction: {formatted_name}")
-        st.info(f"Confidence Score: {confidence:.2f}%")
-
-        if predicted_class in DISEASE_INFO:
-            info = DISEASE_INFO[predicted_class]
-            severity_risk = info['severity']
+    if st.session_state.prediction_made:
