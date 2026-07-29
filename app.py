@@ -11,11 +11,9 @@ st.set_page_config(
     layout="centered"
 )
 
-# App header
 st.title("🌱 AgriAI: Crop Disease & Yield Protection")
 st.markdown("Upload a photo of a crop leaf below to detect potential diseases instantly and protect your harvest.")
 
-# Load the trained model safely
 @st.cache_resource
 def load_my_model():
     return load_model('crop_disease_model.h5')
@@ -23,7 +21,7 @@ def load_my_model():
 with st.spinner('Loading AI Model... Please wait!'):
     model = load_my_model()
 
-# Expanded database for diseases with robust fallbacks
+# Comprehensive database including common classes
 DISEASE_INFO = {
     "TomatoSeptoria_leaf_spot": {
         "severity": "Moderate to High",
@@ -36,6 +34,12 @@ DISEASE_INFO = {
         "description": "Characterized by dark brown spots with concentric rings, often starting on older leaves.",
         "management": "Prune heavily infected branches to improve air circulation and treat with appropriate fungicides.",
         "prevention": "Use disease-resistant seeds, mulch heavily beneath plants, and space them properly."
+    },
+    "Corn_(maize)Common_rust_": {
+        "severity": "Moderate",
+        "description": "Fungal infection producing small, cinnamon-brown to dark brown pustules on both upper and lower leaf surfaces.",
+        "management": "Apply foliar fungicides if disease pressure is high and plants are in critical growth stages.",
+        "prevention": "Plant resistant corn hybrids and ensure proper field drainage and crop residue management."
     }
 }
 
@@ -54,20 +58,11 @@ class_names = [
     'TomatoTarget_Spot', 'TomatoYellow_Leaf_Curl_Virus', 'Tomatomosaic_virus', 'Tomatohealthy'
 ]
 
-# File uploader widget
 uploaded_file = st.file_uploader("Choose a leaf image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption='Uploaded Crop Leaf', use_container_width=True)
-
-    # Use session state so results persist on screen right after clicking analyze
-    if "analyzed" not in st.session_state:
-        st.session_state.analyzed = False
-    if "pred_class" not in st.session_state:
-        st.session_state.pred_class = ""
-    if "conf" not in st.session_state:
-        st.session_state.conf = 0.0
 
     if st.button('Analyze Leaf'):
         with st.spinner('Analyzing image for diseases...'):
@@ -78,14 +73,15 @@ if uploaded_file is not None:
             predictions = model.predict(img_array)
             score = tf.nn.softmax(predictions[0])
 
-            st.session_state.pred_class = class_names[np.argmax(score)]
-            st.session_state.conf = 100 * np.max(score)
-            st.session_state.analyzed = True
+            pred_idx = np.argmax(score)
+            predicted_class = class_names[pred_idx]
+            confidence = 100 * np.max(score)
 
-    # Render results automatically if analysis has been performed
-    if st.session_state.analyzed:
-        predicted_class = st.session_state.pred_class
-        confidence = st.session_state.conf
-
-        formatted_name = predicted_class.replace('_', ' - ').replace('_', ' ')
+        formatted_name = predicted_class.replace('_', ' ').strip('-')
         st.success(f"Prediction: {formatted_name}")
+        st.info(f"Confidence Score: {confidence:.2f}%")
+
+        # Lookup or guaranteed fallback
+        if predicted_class in DISEASE_INFO:
+            info = DISEASE_INFO[predicted_class]
+            severity_risk = info['severity']
