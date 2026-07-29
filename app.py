@@ -21,7 +21,6 @@ def load_my_model():
 with st.spinner('Loading AI Model... Please wait!'):
     model = load_my_model()
 
-# Comprehensive database including common classes
 DISEASE_INFO = {
     "TomatoSeptoria_leaf_spot": {
         "severity": "Moderate to High",
@@ -64,6 +63,7 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption='Uploaded Crop Leaf', use_container_width=True)
 
+    # Everything is nested properly inside this button execution block now
     if st.button('Analyze Leaf'):
         with st.spinner('Analyzing image for diseases...'):
             img_resized = image.resize((160, 160))
@@ -81,7 +81,6 @@ if uploaded_file is not None:
         st.success(f"Prediction: {formatted_name}")
         st.info(f"Confidence Score: {confidence:.2f}%")
 
-        # Lookup or guaranteed fallback
         if predicted_class in DISEASE_INFO:
             info = DISEASE_INFO[predicted_class]
             severity_risk = info['severity']
