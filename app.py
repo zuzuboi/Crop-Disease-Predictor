@@ -82,11 +82,10 @@ if uploaded_file is not None:
         st.success(f"Prediction: {formatted_name}")
         st.info(f"Confidence Score: {confidence:.2f}%")
 
-        # Check if we have extra knowledge base info for this disease
+        # Check if we have extra knowledge base info, otherwise use a smart fallback
         if predicted_class in DISEASE_INFO:
             info = DISEASE_INFO[predicted_class]
-
-            st.warning(f"Estimated Severity Risk: {info['severity']}")
-
-            with st.expander("📖 About the Disease", expanded=True):
-                st.write(info["description"])
+            severity_risk = info['severity']
+            description_text = info['description']
+            management_text = info['management']
+            prevention_text = info['prevention']
