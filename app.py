@@ -25,6 +25,23 @@ with st.spinner('Loading AI Model... Please wait!'):
     model = load_my_model()
 
 # List of 38 PlantVillage class names matching your training order
+DISEASE_INFO = {
+    "TomatoSeptoria_leaf_spot": {
+        "severity": "Moderate to High",
+        "description": "A fungal disease that creates small circular spots with dark borders and grey centers on lower leaves.",
+        "management": "Remove and destroy infected lower leaves immediately. Apply a broad-spectrum fungicide.",
+        "prevention": "Avoid overhead watering to keep leaves dry and practice crop rotation."
+    },
+    "TomatoEarly_blight": {
+        "severity": "High",
+        "description": "Characterized by dark brown spots with concentric rings, often starting on older leaves.",
+        "management": "Prune heavily infected branches to improve air circulation and treat with appropriate fungicides.",
+        "prevention": "Use disease-resistant seeds, mulch heavily beneath plants, and space them properly."
+    }
+}
+
+
+
 class_names = [
     'AppleApple_scab', 'Apple_Black_rot', 'Apple_Cedar_apple_rust', 'Applehealthy',
     'Blueberryhealthy', 'Cherry_(including_sour)Powdery_mildew', 'Cherry_(including_sour)healthy',
@@ -62,7 +79,25 @@ if uploaded_file is not None:
             
             predicted_class = class_names[np.argmax(score)]
             confidence = 100 * np.max(score)
+      
+    
+    formatted_name = predicted_class.replace('_', ' - ').replace('_', ' ')
+    st.success(f"Prediction: {formatted_name}")
+    st.info(f"Confidence Score: {confidence:.2f}%")
+    
+    # Check if we have extra knowledge base info for this disease
+    if predicted_class in DISEASE_INFO:
+        info = DISEASE_INFO[predicted_class]
+        
+        st.warning(f"Estimated Severity Risk: {info['severity']}")
+        
+        with st.expander("📖 About the Disease", expanded=True):
+            st.write(info["description"])
             
-        # Display results cleanly
-        st.success(f"Prediction: {predicted_class.replace('__', ' - ').replace('_', ' ')}")
-        st.info(f"Confidence Score: {confidence:.2f}%")
+        with st.expander("🛠️ Immediate Management & Treatment", expanded=True):
+            st.write(info["management"])
+            
+        with st.expander("🛡️ Long-Term Prevention", expanded=True):
+            st.write(info["prevention"])
+    else:
+        st.info("Detailed management guidelines for this specific class will be available soon.")
