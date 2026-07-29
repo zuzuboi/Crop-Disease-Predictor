@@ -160,11 +160,7 @@ if uploaded_file is not None:
             confidence = 100 * np.max(score)
       
     
-    	import streamlit as st
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-from PIL import Image
-import numpy as np
+    	
 
 # Page configuration
 st.set_page_config(
