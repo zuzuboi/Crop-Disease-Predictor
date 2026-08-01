@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from PIL import Image
 import numpy as np
-
+from disease_info import DISEASE_INFO
 # Page configuration
 st.set_page_config(
     page_title="AgriAI: Crop Disease Predictor",
