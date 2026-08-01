@@ -89,3 +89,13 @@ if uploaded_file is not None:
 
         formatted_name = predicted_class.replace('_', ' - ').replace('_', ' ')
         st.success(f"Prediction: {formatted_name}")
+# Look up details in DISEASE_INFO using the raw predicted_class
+if predicted_class in DISEASE_INFO:
+    info = DISEASE_INFO[predicted_class]
+    
+    st.markdown(f"### Severity: {info.get('severity', 'N/A')}")
+    st.markdown(f"Description: {info.get('description', 'N/A')}")
+    st.markdown(f"Management/Cure: {info.get('management', 'N/A')}")
+    st.markdown(f"Prevention: {info.get('prevention', 'N/A')}")
+else:
+    st.info("Detailed information for this specific condition is coming soon.")
