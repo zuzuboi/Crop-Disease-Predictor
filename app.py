@@ -98,4 +98,4 @@ if predicted_class in DISEASE_INFO:
     st.markdown(f"Management/Cure: {info.get('management', 'N/A')}")
     st.markdown(f"Prevention: {info.get('prevention', 'N/A')}")
 else:
-    st.info("Detailed information for this specific condition is coming soon.")
+    st.info(f"Detailed info missing for key: {predicted_class}")
