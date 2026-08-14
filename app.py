@@ -43,7 +43,7 @@ uploaded_file = st.file_uploader("Choose a leaf image...", type=["jpg", "jpeg", 
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Leaf Image', use_column_width=True)
+    st.image(image, caption='Uploaded Leaf Image', use_container_width=True)
     
     if st.button('Analyze Leaf'):
         with st.spinner('Analyzing image for diseases...'):
